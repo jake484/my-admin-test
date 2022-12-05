@@ -47,36 +47,36 @@ export const routeModel: Record<Auth.RoleType, AuthRoute.Route[]> = {
             localIcon: 'logo'
           }
         },
-				{
-					name: 'document_ai4edocs',
-					path: '/document/ai4edocs',
-					component: 'self',
-					meta: {
-						title: 'Ai4E基础文档',
-						requiresAuth: true,
-						localIcon: 'ai4edocs'
-					}
-				},
-				{
-					name: 'document_ai4emetapse',
-					path: '/document/ai4emetapse',
-					component: 'self',
-					meta: {
-						title: '解析器文档',
-						requiresAuth: true,
-						localIcon: 'ai4emetapse'
-					}
-				},
-				{
-					name: 'document_ai4eserver',
-					path: '/document/ai4eserver',
-					component: 'self',
-					meta: {
-						title: '后端框架文档',
-						requiresAuth: true,
-						localIcon: 'ai4eserver'
-					}
-				},
+        {
+          name: 'document_ai4edocs',
+          path: '/document/ai4edocs',
+          component: 'self',
+          meta: {
+            title: 'Ai4E基础文档',
+            requiresAuth: true,
+            localIcon: 'ai4edocs'
+          }
+        },
+        {
+          name: 'document_ai4emetapse',
+          path: '/document/ai4emetapse',
+          component: 'self',
+          meta: {
+            title: '解析器文档',
+            requiresAuth: true,
+            localIcon: 'ai4emetapse'
+          }
+        },
+        {
+          name: 'document_ai4eserver',
+          path: '/document/ai4eserver',
+          component: 'self',
+          meta: {
+            title: '后端框架文档',
+            requiresAuth: true,
+            localIcon: 'ai4eserver'
+          }
+        },
         {
           name: 'document_ai4ecomponentlib',
           path: '/document/ai4ecomponentlib',
@@ -106,8 +106,7 @@ export const routeModel: Record<Auth.RoleType, AuthRoute.Route[]> = {
             requiresAuth: true,
             icon: 'logos:naiveui'
           }
-        },
-
+        }
       ],
       meta: {
         title: '文档',

@@ -26,7 +26,7 @@ const accounts = [
     label: '超级管理员',
     userName: 'Super',
     password: 'super123'
-  },
+  }
   // {
   //   label: '管理员',
   //   userName: 'Admin',

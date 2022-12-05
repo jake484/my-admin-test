@@ -67,9 +67,7 @@ const tabData = ref<App.MessageTab[]>([
     key: 1,
     name: '通知',
     badgeProps: { type: 'warning' },
-    list: [
-      { id: 1, icon: 'ri:message-3-line', title: 'Ai4ESimulator发布！', date: '2022-06-17' }
-    ]
+    list: [{ id: 1, icon: 'ri:message-3-line', title: 'Ai4ESimulator发布！', date: '2022-06-17' }]
   },
   {
     key: 2,
@@ -90,7 +88,7 @@ const tabData = ref<App.MessageTab[]>([
     name: '待办',
     badgeProps: { type: 'info' },
     list: [
-			{
+      {
         id: 1,
         icon: 'ri:calendar-todo-line',
         title: '后端组件开发',

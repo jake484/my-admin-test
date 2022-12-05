@@ -3,7 +3,7 @@ const document: AuthRoute.Route = {
   path: '/document',
   component: 'basic',
   children: [
-		{
+    {
       name: 'document_project',
       path: '/document/project',
       component: 'self',
@@ -13,7 +13,7 @@ const document: AuthRoute.Route = {
         localIcon: 'log'
       }
     },
-		{
+    {
       name: 'document_ai4edocs',
       path: '/document/ai4edocs',
       component: 'self',
@@ -23,7 +23,7 @@ const document: AuthRoute.Route = {
         localIcon: 'ai4edocs'
       }
     },
-		{
+    {
       name: 'document_ai4emetapse',
       path: '/document/ai4emetapse',
       component: 'self',
@@ -33,7 +33,7 @@ const document: AuthRoute.Route = {
         localIcon: 'ai4emetapse'
       }
     },
-		{
+    {
       name: 'document_ai4eserver',
       path: '/document/ai4eserver',
       component: 'self',
@@ -72,8 +72,7 @@ const document: AuthRoute.Route = {
         requiresAuth: true,
         icon: 'logos:naiveui'
       }
-    },
-
+    }
   ],
   meta: {
     title: '文档',
