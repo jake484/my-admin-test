@@ -3,21 +3,9 @@
     <n-grid-item span="0:24 640:24 1024:24">
       <n-card :bordered="true" class="rounded-16px shadow-sm p-10px">
         <n-space vertical>
-          <n-cascader
-            v-model:value="value"
-            multiple
-            clearable
-            placeholder="选择绘图变量"
-            max-tag-count="responsive"
-            expand-trigger="hover"
-            :options="solInfo.options"
-            :show-path="false"
-            cascade
-            check-strategy="child"
-            filterable
-            clear-filter-after-select
-            @update:value="handleUpdateValue"
-          />
+          <n-cascader v-model:value="value" multiple clearable placeholder="选择绘图变量" max-tag-count="responsive"
+            expand-trigger="hover" :options="solInfo.options" :show-path="false" cascade check-strategy="child"
+            filterable clear-filter-after-select @update:value="handleUpdateValue" />
         </n-space>
       </n-card>
     </n-grid-item>
@@ -213,12 +201,16 @@ const getExampleLine = () => {
 const value = ref(null);
 const solInfo = reactive(new SolutionInfo());
 const getSolutionInfo = () => {
-  axios.get('/public/test.json').then(res => {
-    solInfo.options = getOptionsFromJson(res.data.varinfo);
-    solInfo.sol = res.data.sol;
-    solInfo.t = res.data.t;
-    getExampleLine();
-  });
+  axios.get('http://127.0.0.1:8081/api/getResult').then(
+    res => {
+      solInfo.options = getOptionsFromJson(res.data.data.varinfo);
+      solInfo.sol = res.data.data.sol;
+      solInfo.t = res.data.data.t;
+      getExampleLine();
+    },
+    error => {
+      console.log('@@@Error:', error.message)
+    });
 };
 
 const col: string[] = [
@@ -274,7 +266,7 @@ watch(value, newvalue => {
     });
   }
   lineOptions.value.series = series;
-  console.log(lineOptions.value.series);
+  // console.log(lineOptions.value.series);
   lineOptions.value.legend.data = value;
   lineOptions.value.xAxis[0].data = solInfo.t;
 });
@@ -290,4 +282,6 @@ function handleUpdateValue(value: string[], options: CascaderOption[]) {
 // toRefs(options)
 </script>
 
-<style scoped></style>
+<style scoped>
+
+</style>

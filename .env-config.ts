@@ -4,22 +4,22 @@ type ServiceEnv = Record<ServiceEnvType, ServiceEnvConfig>;
 /** 不同请求服务的环境配置 */
 const serviceEnv: ServiceEnv = {
   dev: {
-    url: 'http://localhost:8080',
-    urlPattern: '/url-pattern',
-    secondUrl: 'http://localhost:8081',
-    secondUrlPattern: '/second-url-pattern'
+    url: 'http://localhost:8081',
+    urlPattern: '/proxy',
+    secondUrl: 'https://www.fastmock.site/mock/c1520107474435ccf66bdaa7781568a8/api/',
+    secondUrlPattern: '/mockproxy'
   },
   test: {
-    url: 'http://localhost:8080',
-    urlPattern: '/url-pattern',
-    secondUrl: 'http://localhost:8081',
-    secondUrlPattern: '/second-url-pattern'
+    url: 'http://localhost:8081',
+    urlPattern: '/proxy',
+    secondUrl: 'https://www.fastmock.site/mock/c1520107474435ccf66bdaa7781568a8/api/',
+    secondUrlPattern: '/mockproxy'
   },
   prod: {
-    url: 'http://localhost:8080',
-    urlPattern: '/url-pattern',
-    secondUrl: 'http://localhost:8081',
-    secondUrlPattern: '/second-url-pattern'
+    url: 'http://localhost:8081',
+    urlPattern: '/proxy',
+    secondUrl: 'http://localhost:8082',
+    secondUrlPattern: '/mockproxy'
   }
 };
 

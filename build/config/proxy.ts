@@ -12,6 +12,7 @@ export function createViteProxy(isOpenProxy: boolean, envConfig: ServiceEnvConfi
     [envConfig.urlPattern]: {
       target: envConfig.url,
       changeOrigin: true,
+      ws: true,
       rewrite: path => path.replace(new RegExp(`^${envConfig.urlPattern}`), '')
     },
     [envConfig.secondUrlPattern]: {
