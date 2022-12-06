@@ -1,11 +1,40 @@
 <template>
   <n-grid :x-gap="16" :y-gap="16" :item-responsive="true">
     <n-grid-item span="0:24 640:24 1024:24">
-      <n-card :bordered="true" class="rounded-16px shadow-sm p-10px">
+      <n-card :bordered="true" class="rounded-16px shadow-sm p-2px">
         <n-space vertical>
-          <n-cascader v-model:value="value" multiple clearable placeholder="选择绘图变量" max-tag-count="responsive"
+          <n-cascader v-model:value="value" multiple clearable placeholder="状态演化图（变量随时间变化）：选择绘图变量"
+            max-tag-count="responsive" expand-trigger="hover" :options="solInfo.options" :show-path="false" cascade
+            check-strategy="child" filterable clear-filter-after-select @update:value="handleUpdateValue" />
+        </n-space>
+      </n-card>
+    </n-grid-item>
+
+    <n-grid-item span="0:24 640:24 1024:24">
+      <n-card :bordered="false" class="rounded-16px shadow-sm">
+        <div class="flex w-full h-360px">
+          <div class="flex-1-hidden h-full">
+            <div ref="lineRef" class="wh-full"></div>
+          </div>
+        </div>
+      </n-card>
+    </n-grid-item>
+
+    <n-grid-item span="0:24 640:24 1024:12">
+      <n-card :bordered="true" class="rounded-16px shadow-sm p-2px">
+        <n-space vertical>
+          <n-cascader v-model:value="rFigValueX" clearable placeholder="变量关系图：选择横轴变量" max-tag-count="responsive"
             expand-trigger="hover" :options="solInfo.options" :show-path="false" cascade check-strategy="child"
-            filterable clear-filter-after-select @update:value="handleUpdateValue" />
+            filterable clear-filter-after-select />
+        </n-space>
+      </n-card>
+    </n-grid-item>
+    <n-grid-item span="0:24 640:24 1024:12">
+      <n-card :bordered="true" class="rounded-16px shadow-sm p-2px">
+        <n-space vertical>
+          <n-cascader v-model:value="rFigValueY" clearable placeholder="变量关系图：选择纵轴变量" max-tag-count="responsive"
+            expand-trigger="hover" :options="solInfo.options" :show-path="false" cascade check-strategy="child"
+            filterable clear-filter-after-select />
         </n-space>
       </n-card>
     </n-grid-item>
@@ -13,7 +42,7 @@
       <n-card :bordered="false" class="rounded-16px shadow-sm">
         <div class="flex w-full h-360px">
           <div class="flex-1-hidden h-full">
-            <div ref="lineRef" class="wh-full"></div>
+            <div ref="rlineRef" class="wh-full"></div>
           </div>
         </div>
       </n-card>
@@ -26,7 +55,7 @@ import { reactive, ref, onMounted, watch } from 'vue';
 import type { Ref } from 'vue';
 import type { CascaderOption } from 'naive-ui';
 import axios from 'axios';
-import { floor, random } from 'lodash';
+import { floor, random, round } from 'lodash';
 import { type ECOption, useEcharts } from '@/composables';
 
 defineOptions({ name: 'DashboardAnalysisTopCard' });
@@ -135,7 +164,68 @@ const lineOptions = ref<ECOption>({
   ]
 }) as Ref<ECOption>;
 
+const rlineOptions = ref<ECOption>({
+  tooltip: {
+    trigger: 'axis',
+    axisPointer: {
+      type: 'cross',
+      label: {
+        backgroundColor: '#6a7985'
+      }
+    }
+  },
+  grid: {
+    left: '3%',
+    right: '4%',
+    bottom: '3%',
+    containLabel: true
+  },
+  xAxis: [
+    {
+      type: 'category',
+      boundaryGap: false,
+      data: [1, 2, 3, 4, 5]
+    }
+  ],
+  yAxis: [
+    {
+      type: 'value',
+    }
+  ],
+  series: [
+    {
+      color: '#26deca',
+      data: [1, 2, 3, 4, 5],
+      type: 'line',
+      smooth: true,
+      showSymbol: false,
+      areaStyle: {
+        color: {
+          type: 'linear',
+          x: 0,
+          y: 0,
+          x2: 0,
+          y2: 1,
+          colorStops: [
+            {
+              offset: 0.25,
+              color: '#26deca'
+            },
+            {
+              offset: 1,
+              color: '#fff'
+            }
+          ]
+        }
+      },
+    }
+  ]
+
+}) as Ref<ECOption>;
+
 const { domRef: lineRef } = useEcharts(lineOptions);
+
+const { domRef: rlineRef } = useEcharts(rlineOptions);
 
 function getOptionsFromJson(arr: any): CascaderOption[] {
   const options: CascaderOption[] = [];
@@ -199,9 +289,14 @@ const getExampleLine = () => {
   ];
 };
 const value = ref(null);
+
+const rFigValueX = ref(null);
+const rFigValueY = ref(null);
+
 const solInfo = reactive(new SolutionInfo());
 const getSolutionInfo = () => {
-  axios.get('http://127.0.0.1:8081/api/getResult').then(
+  // axios.get('http://127.0.0.1:8081/api/getResult').then(
+  axios.get('https://www.fastmock.site/mock/c1520107474435ccf66bdaa7781568a8/api/getResult').then(
     res => {
       solInfo.options = getOptionsFromJson(res.data.data.varinfo);
       solInfo.sol = res.data.data.sol;
@@ -269,6 +364,24 @@ watch(value, newvalue => {
   // console.log(lineOptions.value.series);
   lineOptions.value.legend.data = value;
   lineOptions.value.xAxis[0].data = solInfo.t;
+});
+
+watch([rFigValueX, rFigValueY], newvalue => {
+  console.log(newvalue);
+  if (newvalue[0] !== null && newvalue[1] !== null) {
+    var xdata: Array<number> = solInfo.sol[newvalue[0]];
+    var ydata: Array<number> = solInfo.sol[newvalue[1]];
+    for (let i = 0; i < xdata.length; i++) {
+      xdata[i] = round(xdata[i], 8)
+      ydata[i] = round(xdata[i], 8)
+    }
+    rlineOptions.value.xAxis[0].data = xdata;
+    rlineOptions.value.series[0].data = ydata;
+  }
+  else{
+    rlineOptions.value.xAxis[0].data = [];
+    rlineOptions.value.series[0].data = [];
+  }
 });
 
 onMounted(() => {
