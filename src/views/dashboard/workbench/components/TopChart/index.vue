@@ -23,7 +23,7 @@
     <n-grid-item span="0:24 640:24 1024:12">
       <n-card :bordered="true" class="rounded-16px shadow-sm p-2px">
         <n-space vertical>
-          <n-cascader v-model:value="rFigValueX" clearable placeholder="变量关系图：选择横轴变量" max-tag-count="responsive"
+          <n-cascader v-model:value="rFigValueX" clearable placeholder="变量关系散点图：选择横轴变量" max-tag-count="responsive"
             expand-trigger="hover" :options="solInfo.options" :show-path="false" cascade check-strategy="child"
             filterable clear-filter-after-select />
         </n-space>
@@ -32,7 +32,7 @@
     <n-grid-item span="0:24 640:24 1024:12">
       <n-card :bordered="true" class="rounded-16px shadow-sm p-2px">
         <n-space vertical>
-          <n-cascader v-model:value="rFigValueY" clearable placeholder="变量关系图：选择纵轴变量" max-tag-count="responsive"
+          <n-cascader v-model:value="rFigValueY" clearable placeholder="变量关系散点图：选择纵轴变量" max-tag-count="responsive"
             expand-trigger="hover" :options="solInfo.options" :show-path="false" cascade check-strategy="child"
             filterable clear-filter-after-select />
         </n-space>
@@ -164,68 +164,119 @@ const lineOptions = ref<ECOption>({
   ]
 }) as Ref<ECOption>;
 
-const rlineOptions = ref<ECOption>({
-  tooltip: {
-    trigger: 'axis',
-    axisPointer: {
-      type: 'cross',
-      label: {
-        backgroundColor: '#6a7985'
-      }
+// const rlineOptions = ref<ECOption>({
+//   tooltip: {
+//     trigger: 'axis',
+//     axisPointer: {
+//       type: 'cross',
+//       label: {
+//         backgroundColor: '#6a7985'
+//       }
+//     }
+//   },
+//   grid: {
+//     left: '3%',
+//     right: '4%',
+//     bottom: '3%',
+//     containLabel: true
+//   },
+//   xAxis: [
+//     {
+//       type: 'category',
+//       boundaryGap: false,
+//       data: [1, 2, 3, 4, 5]
+//     }
+//   ],
+//   yAxis: [
+//     {
+//       type: 'value',
+//     }
+//   ],
+//   series: [
+//     {
+//       color: '#26deca',
+//       data: [1, 2, 3, 4, 5],
+//       type: 'line',
+//       smooth: true,
+//       showSymbol: false,
+//       areaStyle: {
+//         color: {
+//           type: 'linear',
+//           x: 0,
+//           y: 0,
+//           x2: 0,
+//           y2: 1,
+//           colorStops: [
+//             {
+//               offset: 0.25,
+//               color: '#26deca'
+//             },
+//             {
+//               offset: 1,
+//               color: '#fff'
+//             }
+//           ]
+//         }
+//       },
+//     }
+//   ]
+
+// }) as Ref<ECOption>;
+
+// echart的散点图坐标轴自适应
+const scatterOption = ref<ECOption>({
+  xAxis: {
+    min: (value) => {
+      return round(1.1 * value.min - 0.1 * value.max, 1)
+    },
+    max: (value) => {
+      return round(1.1 * value.max - 0.1 * value.min, 1)
     }
   },
-  grid: {
-    left: '3%',
-    right: '4%',
-    bottom: '3%',
-    containLabel: true
+  yAxis: {
+    min: (value) => {
+      return round(1.1 * value.min - 0.1 * value.max, 1)
+    },
+    max: (value) => {
+      return round(1.1 * value.max - 0.1 * value.min, 1)
+    }
   },
-  xAxis: [
-    {
-      type: 'category',
-      boundaryGap: false,
-      data: [1, 2, 3, 4, 5]
-    }
-  ],
-  yAxis: [
-    {
-      type: 'value',
-    }
-  ],
   series: [
     {
-      color: '#26deca',
-      data: [1, 2, 3, 4, 5],
-      type: 'line',
-      smooth: true,
-      showSymbol: false,
-      areaStyle: {
-        color: {
-          type: 'linear',
-          x: 0,
-          y: 0,
-          x2: 0,
-          y2: 1,
-          colorStops: [
-            {
-              offset: 0.25,
-              color: '#26deca'
-            },
-            {
-              offset: 1,
-              color: '#fff'
-            }
-          ]
-        }
-      },
+      symbolSize: 10,
+      data: [
+        [10.0, 8.04],
+        [8.07, 6.95],
+        [13.0, 7.58],
+        [9.05, 8.81],
+        [11.0, 8.33],
+        [14.0, 7.66],
+        [13.4, 6.81],
+        [10.0, 6.33],
+        [14.0, 8.96],
+        [12.5, 6.82],
+        [9.15, 7.2],
+        [11.5, 7.2],
+        [3.03, 4.23],
+        [12.2, 7.83],
+        [2.02, 4.47],
+        [1.05, 3.33],
+        [4.05, 4.96],
+        [6.03, 7.24],
+        [12.0, 6.26],
+        [12.0, 8.84],
+        [7.08, 5.82],
+        [5.02, 5.68]
+      ],
+      type: 'scatter'
     }
   ]
-
 }) as Ref<ECOption>;
+
 
 const { domRef: lineRef } = useEcharts(lineOptions);
 
-const { domRef: rlineRef } = useEcharts(rlineOptions);
+const { domRef: rlineRef } = useEcharts(scatterOption);
 
 function getOptionsFromJson(arr: any): CascaderOption[] {
   const options: CascaderOption[] = [];
@@ -366,21 +417,42 @@ watch(value, newvalue => {
   lineOptions.value.xAxis[0].data = solInfo.t;
 });
 
+// watch([rFigValueX, rFigValueY], newvalue => {
+//   // 
+//   if (newvalue[0] !== null && newvalue[1] !== null) {
+//     var xdata: Array<number> = solInfo.sol[newvalue[0]];
+//     var ydata: Array<number> = solInfo.sol[newvalue[1]];
+//     for (let i = 0; i < xdata.length; i++) {
+//       xdata[i] = round(xdata[i], 8)
+//       ydata[i] = round(ydata[i], 8)
+//     }
+//     rlineOptions.value.xAxis[0].data = xdata;
+//     rlineOptions.value.series[0].data = ydata;
+//     console.log("newvalue",newvalue);
+//     console.log("xdata",xdata);
+//     console.log("ydata",ydata);
+//   }
+//   else{
+//     rlineOptions.value.xAxis[0].data = [];
+//     rlineOptions.value.series[0].data = [];
+//   }
+// });
+
 watch([rFigValueX, rFigValueY], newvalue => {
-  console.log(newvalue);
+  // 
   if (newvalue[0] !== null && newvalue[1] !== null) {
     var xdata: Array<number> = solInfo.sol[newvalue[0]];
     var ydata: Array<number> = solInfo.sol[newvalue[1]];
+    // 合并xdata与ydata
+    var data: Array<Array<number>> = [];
     for (let i = 0; i < xdata.length; i++) {
-      xdata[i] = round(xdata[i], 8)
-      ydata[i] = round(xdata[i], 8)
+      data.push([xdata[i], ydata[i]]);
     }
-    rlineOptions.value.xAxis[0].data = xdata;
-    rlineOptions.value.series[0].data = ydata;
+    scatterOption.value.series[0].data = data;
+    console.log("newvalue", newvalue);
   }
-  else{
-    rlineOptions.value.xAxis[0].data = [];
-    rlineOptions.value.series[0].data = [];
+  else {
+    scatterOption.value.series[0].data = [];
   }
 });
 
